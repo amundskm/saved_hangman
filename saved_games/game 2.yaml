@@ -1,0 +1,20 @@
+--- !ruby/object:Hangman
+word: 'overinsistent
+
+'
+hang_word:
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+wrong_letters: []
+chances: 6
