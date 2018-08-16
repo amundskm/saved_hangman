@@ -33,6 +33,34 @@
 # - Add a load function to the beginning of the game
 # *******************************************************************************
 require "yaml"
+require 'sinatra'
+
+get '/' do
+  redirect to '/new' if session["game"].nil?
+  redirect to '/new' if session["game"].check_ans
+  redirect to '/loss' if session["game"].chances == 0
+  wrong = "Wrong Letters: #{session["game"].wrong_letters}"
+  hang = "Word: #{session["game"].hang_word}"
+  misses = "Wrong Letters: #{session["game"].chances}"
+  erb :index, :locals => {
+    :wrong_letters => wrong,
+    :hang_word => hang,
+    :chances => misses
+  }
+
+end
+
+get '/new' do
+  session["game"] = Hangman.new
+  redirect to '/'
+end
+
+post '/guess' do
+  guess = params["guess"]
+  session["game"].check_letter(guess)
+  redirect to '/'
+end
+
 
 class Hangman
     attr_reader :word
@@ -43,16 +71,6 @@ class Hangman
         @hang_word = create_hang_word
         @wrong_letters = []
         @chances = 6
-    end
-
-    def save_game
-        dir_length = Dir.entries("#{__dir__}/saved_games/").length - 1
-        filename = "game #{dir_length}"
-        yaml = YAML::dump(self)
-        path = File.join(File.dirname(__FILE__), "/saved_games/#{filename}.yaml")
-        rdfile = File.new(path, "w+")
-        rdfile.write(yaml)
-        rdfile.close
     end
 
     def choose_word
@@ -80,7 +98,6 @@ class Hangman
         if found == 0
             wrong_letters << letter
             @chances -=  1
-            puts chances
         end
 
     end
@@ -93,27 +110,26 @@ class Hangman
 
 end
 
-def load_game
-    while true
-        array = []
-        #puts "what is the file you want to load?"
-        filename = gets.chomp
-        path = File.join(File.dirname(__FILE__), "/saved_games/", "#{filename}")
-        puts path
-        if File.exist?(path)
-            game_file = File.new(path)
-            yaml = game_file.read
-            return YAML::load(yaml)
-        end
-    end
-end
-
-new_game = Hangman.new
-  get '/' do
-      guess = params['letter']
-      gallows = new_game.chances
-      wrong_letters = "a, e, i"
-      word = new_game.hang_word
-      erb :index, :locals => {:gallows => gallows, :wrong_letters => wrong_letters, :word => word}
-  end
-  
+# def load_game
+#     while true
+#         array = []
+#         filename = gets.chomp
+#         path = File.join(File.dirname(__FILE__), "/saved_games/", "#{filename}")
+#         puts path
+#         if File.exist?(path)
+#             game_file = File.new(path)
+#             yaml = game_file.read
+#             return YAML::load(yaml)
+#         end
+#     end
+# end
+#
+# def save_game
+#     dir_length = Dir.entries("#{__dir__}/saved_games/").length - 1
+#     filename = "game #{dir_length}"
+#     yaml = YAML::dump(self)
+#     path = File.join(File.dirname(__FILE__), "/saved_games/#{filename}.yaml")
+#     rdfile = File.new(path, "w+")
+#     rdfile.write(yaml)
+#     rdfile.close
+# end
