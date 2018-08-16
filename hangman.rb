@@ -32,28 +32,39 @@
 # - Add a save function to the game after it has started.
 # - Add a load function to the beginning of the game
 # *******************************************************************************
-require "yaml"
 require 'sinatra'
+if development?
+	require "sinatra/reloader"
+end
 enable :sessions
 
 get '/' do
   redirect to '/new' if session["game"].nil?
-  redirect to '/new' if session["game"].check_ans
-  redirect to '/new' if session["game"].chances == 0
+  redirect to '/win' if session["game"].check_ans
+  redirect to '/loss' if session["game"].chances == 0
   wrong = "Wrong Letters: #{session["game"].wrong_letters}"
-  hang = "Word: #{session["game"].hang_word}"
-  misses = "Wrong Letters: #{session["game"].chances}"
+  hang = "Word: #{session["game"].hang_word.join(" ")}"
+  misses = "Chances Left: #{session["game"].chances}"
   erb :index, :locals => {:wrong_letters => wrong,:hang_word => hang,:chances => misses}
 
 end
 
 get '/new' do
-  session["game"] = Hangman.new
+session["game"] = Hangman.new
   redirect to '/'
 end
 
+get '/win' do
+  erb :win
+end
+
+get '/loss' do
+  word = session["game"].word
+  erb :loss, :locals => {:word => word}
+end
+
 post '/guess' do
-  guess = params["guess"]
+  guess = params["letter"]
   session["game"].check_letter(guess)
   redirect to '/'
 end
@@ -82,21 +93,25 @@ class Hangman
     end
 
     def check_letter(letter)
+      letter = letter.downcase
+
         found = 0
         index = 0
-        word.each_char do |check|
-            if letter == check
-                hang_word[index] = letter
-                found += 1
+        if (letter.ord >= 97 && letter.ord <= 122)
+          unless @wrong_letters.include?(letter)
+            word.each_char do |check|
+                if letter == check
+                    hang_word[index] = letter
+                    found += 1
+                end
+                index += 1
             end
-            index += 1
+            if found == 0
+                wrong_letters << letter
+                @chances -=  1
+            end
+          end
         end
-
-        if found == 0
-            wrong_letters << letter
-            @chances -=  1
-        end
-
     end
 
     def check_ans

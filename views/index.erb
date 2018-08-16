@@ -8,21 +8,19 @@
     </div>
     <div id= 'main'>
       <div id= 'gallows'>
-        <%= gallows %>
+        <%= chances %>
       </div>
       <div id= 'wrong_letters'>
         <%= wrong_letters %>
       </div>
       <div id= 'word'>
-        <%= word %>
+        <%= hang_word %>
       </div>
     </div>
-    <form>
+    <form action= '/guess', method='post'>
     <label>Enter Letter: </label>
       <input type='text' name='letter' />
       <input type='submit' value='Guess' />
     </form>
-  <button type= 'button'>Load</button>
-  <button type= 'button'>Save</button>
   </body>
 </html>
