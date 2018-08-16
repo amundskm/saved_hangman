@@ -13,7 +13,7 @@
 # KNOWNS:
 # HOW TO PLAY:
 #   1. A word is chosen at random from the provided dictionary of words.
-#   2. The word length is shown using '_' as a placeholder for the 
+#   2. The word length is shown using '_' as a placeholder for the
 #   unknown letters of the word. For example, if the word was "cookie",
 #   the program would present the player with "_ _ _ _ _ _" so that the player
 #   could see the length of the word and the letters that have been guessed
@@ -64,57 +64,29 @@ class Hangman
         ans = []
         (word.length - 1).times {ans << "_" }
         ans
-    end       
-
-    def draw_game
-        puts "Word to Guess: #{hang_word}\n"
-        puts "Incorrect Letters: #{wrong_letters}\n"
-        puts "Chances Left: #{chances}"
     end
 
     def check_letter(letter)
         found = 0
         index = 0
-        puts letter
-        if letter == "save"
-            return false
-        else
-            word.each_char do |check|
-                if letter == check
-                    hang_word[index] = letter 
-                    found += 1
-                end
-                index += 1
+        word.each_char do |check|
+            if letter == check
+                hang_word[index] = letter
+                found += 1
             end
-
-            if found == 0
-                wrong_letters << letter  
-                @chances -=  1
-                puts chances
-            end
+            index += 1
         end
-    end
 
-    def get_letter
-        while true
-            puts "Letter to guess, or 'save'?"
-            input = gets.chomp.downcase
-            if (wrong_letters.include?(input)) || (hang_word.include?(input))
-                puts "You have already guessed that letter"
-            elsif input == "save"
-                save_game
-                return input
-            elsif input !~ /[a-z]/
-                puts "That is not a letter."
-            else
-                return input
-            end
+        if found == 0
+            wrong_letters << letter
+            @chances -=  1
+            puts chances
         end
+
     end
 
     def check_ans
       if hang_word.include?( "_") == false
-        puts "Congratulations, you have solved it!"
         true
       end
     end
@@ -124,7 +96,7 @@ end
 def load_game
     while true
         array = []
-        puts "what is the file you want to load?"
+        #puts "what is the file you want to load?"
         filename = gets.chomp
         path = File.join(File.dirname(__FILE__), "/saved_games/", "#{filename}")
         puts path
@@ -132,40 +104,16 @@ def load_game
             game_file = File.new(path)
             yaml = game_file.read
             return YAML::load(yaml)
-        else
-            puts "There is no such file."
         end
     end
 end
 
-def load_check
-    while true
-        puts "Do you want a new game or to load a previously saved game? [ng, load]"
-        input = gets.chomp
-        case input
-        when "ng"
-            return Hangman.new
-        when "load"
-            return load_game
-        else
-            puts "That is not an option."
-        end
-    end
-end
-
-
-
-
-game = load_check
-while game.chances > 0
-    game.draw_game
-    if game.check_letter(game.get_letter) == false
-        puts "game is saved"
-        break
-    end
-    break if game.check_ans
-end
-
-if game.chances == 0
-    puts "Better luck next time. The word was #{game.word}"
-end
+new_game = Hangman.new
+  get '/' do
+      guess = params['letter']
+      gallows = new_game.chances
+      wrong_letters = "a, e, i"
+      word = new_game.hang_word
+      erb :index, :locals => {:gallows => gallows, :wrong_letters => wrong_letters, :word => word}
+  end
+  

@@ -1,10 +1,6 @@
 <html>
   <head>
-    <style>
-      body{
-        background-color: white
-      }
-    </style>
+
   </head>
   <body>
     <div id= 'title'>
@@ -12,14 +8,20 @@
     </div>
     <div id= 'main'>
       <div id= 'gallows'>
+        <%= gallows %>
       </div>
       <div id= 'wrong_letters'>
+        <%= wrong_letters %>
       </div>
       <div id= 'word'>
+        <%= word %>
       </div>
     </div>
-  <div id= 'keyboard'>
-  </div>
+    <form>
+    <label>Enter Letter: </label>
+      <input type='text' name='letter' />
+      <input type='submit' value='Guess' />
+    </form>
   <button type= 'button'>Load</button>
   <button type= 'button'>Save</button>
   </body>
