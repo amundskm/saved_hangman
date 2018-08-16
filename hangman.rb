@@ -42,11 +42,7 @@ get '/' do
   wrong = "Wrong Letters: #{session["game"].wrong_letters}"
   hang = "Word: #{session["game"].hang_word}"
   misses = "Wrong Letters: #{session["game"].chances}"
-  erb :index, :locals => {
-    :wrong_letters => wrong,
-    :hang_word => hang,
-    :chances => misses
-  }
+  erb :index, :locals => {:wrong_letters => wrong,:hang_word => hang,:chances => misses}
 
 end
 
