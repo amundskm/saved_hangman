@@ -38,7 +38,7 @@ require 'sinatra'
 get '/' do
   redirect to '/new' if session["game"].nil?
   redirect to '/new' if session["game"].check_ans
-  redirect to '/loss' if session["game"].chances == 0
+  redirect to '/new' if session["game"].chances == 0
   wrong = "Wrong Letters: #{session["game"].wrong_letters}"
   hang = "Word: #{session["game"].hang_word}"
   misses = "Wrong Letters: #{session["game"].chances}"
