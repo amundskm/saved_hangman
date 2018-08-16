@@ -34,6 +34,7 @@
 # *******************************************************************************
 require "yaml"
 require 'sinatra'
+enable :sessions
 
 get '/' do
   redirect to '/new' if session["game"].nil?
